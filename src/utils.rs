@@ -71,6 +71,21 @@ pub fn one_hot(digit: usize) -> [f32; 10] {
     }
     arr
 }
+
+pub fn from_one_hot(arr: [f32; 10]) -> usize {
+    let mut idx = 0;
+    let mut max_val = arr[0];
+
+    for (i, &val) in arr.iter().enumerate() {
+        if val > max_val {
+            max_val = val;
+            idx = i;
+        }
+    }
+
+    idx
+}
+
 pub fn argmax(arr: [f32; 10]) -> u8 {
     let mut max_index = 0;
     let mut max_value = arr[0];

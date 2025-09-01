@@ -72,9 +72,24 @@ pub fn one_hot(digit: usize) -> [f32; 10] {
     arr
 }
 
-pub fn from_one_hot(arr: [f32; 10]) -> usize {
+// pub fn from_one_hot(arr: [f32; 10]) -> usize {
+//     let mut idx = 0;
+//     let mut max_val = arr[0];
+
+//     for (i, &val) in arr.iter().enumerate() {
+//         if val > max_val {
+//             max_val = val;
+//             idx = i;
+//         }
+//     }
+
+//     idx
+// }
+
+pub fn from_one_hot(arr: [f32; 10]) -> (usize, f32) {
     let mut idx = 0;
     let mut max_val = arr[0];
+    let sum: f32 = arr.iter().sum();
 
     for (i, &val) in arr.iter().enumerate() {
         if val > max_val {
@@ -83,7 +98,14 @@ pub fn from_one_hot(arr: [f32; 10]) -> usize {
         }
     }
 
-    idx
+    // Calculate percentage of the max value relative to the sum
+    let percentage = if sum > 0.0 {
+        (max_val / sum) * 100.0
+    } else {
+        0.0
+    };
+
+    (idx, percentage)
 }
 
 pub fn argmax(arr: [f32; 10]) -> u8 {

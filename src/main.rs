@@ -12,6 +12,6 @@ fn main() {
     loop {
         let data = draw::do_drawing(&mut rl, &thread, &mut canvas);
         let g = ai.forward(data);
-        println!("{:?}", utils::from_one_hot(g));
+        println!(" pridiction = {:?}", utils::from_one_hot(g));
     }
 }

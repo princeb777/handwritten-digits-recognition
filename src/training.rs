@@ -6,8 +6,8 @@ use crate::network;
 use crate::utils;
 
 pub fn do_things() -> network::Network {
-    let train = dataset::data_loader("data/train.csv", 60000);
-    let test = dataset::data_loader("data/test.csv", 10000);
+    let train = dataset::load_train_data();
+    let test = dataset::load_test_data();
 
     let mut new_net = network::Network::new(784, 64, 10);
     let epoch = 5;

@@ -128,3 +128,162 @@ impl Network {
         }
     }
 }
+
+use std::fs::File;
+use std::io::{self, Read, Write};
+use std::path::PathBuf;
+
+impl Network {
+    pub fn save(&self, path: &str) -> io::Result<()> {
+        let mut file = File::create(path)?;
+
+        // Save metadata (input, hidden, output)
+        file.write_all(&(self.input as u64).to_le_bytes())?;
+        file.write_all(&(self.hidden as u64).to_le_bytes())?;
+        file.write_all(&(self.output as u64).to_le_bytes())?;
+
+        // Save hidden_weights
+        for row in &self.hidden_weights {
+            for &val in row {
+                file.write_all(&val.to_le_bytes())?;
+            }
+        }
+
+        // Save output_weights
+        for row in &self.output_weights {
+            for &val in row {
+                file.write_all(&val.to_le_bytes())?;
+            }
+        }
+
+        // Save hidden_biase
+        for &val in &self.hidden_biase {
+            file.write_all(&val.to_le_bytes())?;
+        }
+
+        // Save output_biase
+        for &val in &self.output_biase {
+            file.write_all(&val.to_le_bytes())?;
+        }
+
+        Ok(())
+    }
+
+    pub fn load(path: PathBuf) -> io::Result<Self> {
+        let mut file = File::open(path)?;
+        let mut buf = [0u8; 8];
+
+        // Read metadata
+        file.read_exact(&mut buf)?;
+        let input = u64::from_le_bytes(buf) as usize;
+        file.read_exact(&mut buf)?;
+        let hidden = u64::from_le_bytes(buf) as usize;
+        file.read_exact(&mut buf)?;
+        let output = u64::from_le_bytes(buf) as usize;
+
+        // Read helper
+        fn read_f32(file: &mut File) -> io::Result<f32> {
+            let mut buf = [0u8; 4];
+            file.read_exact(&mut buf)?;
+            Ok(f32::from_le_bytes(buf))
+        }
+
+        // hidden_weights
+        let mut hidden_weights = [[0.0f32; 784]; HIDDEN];
+        for row in &mut hidden_weights {
+            for val in row.iter_mut() {
+                *val = read_f32(&mut file)?;
+            }
+        }
+
+        // output_weights
+        let mut output_weights = [[0.0f32; HIDDEN]; 10];
+        for row in &mut output_weights {
+            for val in row.iter_mut() {
+                *val = read_f32(&mut file)?;
+            }
+        }
+
+        // hidden_biase
+        let mut hidden_biase = [0.0f32; HIDDEN];
+        for val in hidden_biase.iter_mut() {
+            *val = read_f32(&mut file)?;
+        }
+
+        // output_biase
+        let mut output_biase = [0.0f32; 10];
+        for val in output_biase.iter_mut() {
+            *val = read_f32(&mut file)?;
+        }
+
+        Ok(Self {
+            input,
+            hidden,
+            output,
+            hidden_weights,
+            output_weights,
+            hidden_biase,
+            output_biase,
+        })
+    }
+}
+use std::io::Cursor;
+impl Network {
+    pub fn load_default(bytes: &[u8]) -> io::Result<Self> {
+        let mut cursor = Cursor::new(bytes);
+        let mut buf = [0u8; 8];
+
+        // Read metadata
+        cursor.read_exact(&mut buf)?;
+        let input = u64::from_le_bytes(buf) as usize;
+        cursor.read_exact(&mut buf)?;
+        let hidden = u64::from_le_bytes(buf) as usize;
+        cursor.read_exact(&mut buf)?;
+        let output = u64::from_le_bytes(buf) as usize;
+
+        // Helper
+        fn read_f32<R: Read>(reader: &mut R) -> io::Result<f32> {
+            let mut buf = [0u8; 4];
+            reader.read_exact(&mut buf)?;
+            Ok(f32::from_le_bytes(buf))
+        }
+
+        // hidden_weights
+        let mut hidden_weights = [[0.0f32; 784]; HIDDEN];
+        for row in &mut hidden_weights {
+            for val in row.iter_mut() {
+                *val = read_f32(&mut cursor)?;
+            }
+        }
+
+        // output_weights
+        let mut output_weights = [[0.0f32; HIDDEN]; 10];
+        for row in &mut output_weights {
+            for val in row.iter_mut() {
+                *val = read_f32(&mut cursor)?;
+            }
+        }
+
+        // hidden_biase
+        let mut hidden_biase = [0.0f32; HIDDEN];
+        for val in hidden_biase.iter_mut() {
+            *val = read_f32(&mut cursor)?;
+        }
+
+        // output_biase
+        let mut output_biase = [0.0f32; 10];
+        for val in output_biase.iter_mut() {
+            *val = read_f32(&mut cursor)?;
+        }
+
+        Ok(Self {
+            input,
+            hidden,
+            output,
+            hidden_weights,
+            output_weights,
+            hidden_biase,
+            output_biase,
+        })
+    }
+}

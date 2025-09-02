@@ -1,1 +1,2 @@
-how to code digit recognition ai using mnist csv dataset with headers in rust without using any ml crates from scratch u can use crates like numpy equivalent for rust and csv for data loading and etc and also have mutlithreaded so it uses all the cpu
+<!-- to build for windows -->
+BINDGEN_EXTRA_CLANG_ARGS="--target=x86_64-w64-mingw32 -I/usr/x86_64-w64-mingw32/include" cargo build --release --target x86_64-pc-windows-gnu

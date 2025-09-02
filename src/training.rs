@@ -29,5 +29,23 @@ pub fn do_things() -> network::Network {
 
         println!("acc {}", corrects / 10000.0)
     }
+    let mut file_name = String::new();
+    println!("Enter the file name to save the model");
+    println!("Press Enter to skip");
+
+    loop {
+        file_name.clear();
+        match std::io::stdin().read_line(&mut file_name) {
+            Ok(_) => break,
+            Err(e) => eprintln!("Error {}", e),
+        }
+    }
+    if !file_name.trim().is_empty() {
+        let path = format!("{}.mnistai", file_name.trim());
+        let g = new_net.save(&path);
+        if g.is_err() {
+            eprintln!("AI Not saved at path {}", file_name);
+        }
+    }
     new_net
 }

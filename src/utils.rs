@@ -52,17 +52,6 @@ pub fn softmax(outputs: &[f32; 10]) -> [f32; 10] {
     result
 }
 
-// pub fn relu_derivative(x: f32) -> f32 {
-//     if x > 0.0 { 1.0 } else { 0.0 }
-// }
-
-// pub fn cross_entropy_loss(predicted: &[f32; 10], target: &[f32; 10]) -> f32 {
-//     -predicted
-//         .iter()
-//         .zip(target.iter())
-//         .map(|(p, t)| t * p.ln())
-//         .sum::<f32>()
-// }
 
 pub fn one_hot(digit: usize) -> [f32; 10] {
     let mut arr = [0.0; 10];
@@ -72,19 +61,7 @@ pub fn one_hot(digit: usize) -> [f32; 10] {
     arr
 }
 
-// pub fn from_one_hot(arr: [f32; 10]) -> usize {
-//     let mut idx = 0;
-//     let mut max_val = arr[0];
 
-//     for (i, &val) in arr.iter().enumerate() {
-//         if val > max_val {
-//             max_val = val;
-//             idx = i;
-//         }
-//     }
-
-//     idx
-// }
 
 pub fn from_one_hot(arr: [f32; 10]) -> (usize, f32) {
     let mut idx = 0;
